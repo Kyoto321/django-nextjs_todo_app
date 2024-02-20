@@ -1,6 +1,6 @@
 from django.db import models
 #from django.contrib.auth.models import User
-from users.models import UserAccount
+from accounts.models import UserAccount
 # Create your models here.
 
 
@@ -9,6 +9,7 @@ class Task(models.Model):
         UserAccount, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
+    slug = models.SlugField(unique=True)
     complete = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
