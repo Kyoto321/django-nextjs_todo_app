@@ -59,11 +59,3 @@ class SearchView(APIView):
         
 
 
-
-
-"""
-class TasksView(RetrieveAPIView):
-    queryset = Tasks.objects.all()
-    serializer_class = TasksSerializer
-"""    
-    
