@@ -5,11 +5,8 @@ from rest_framework import permissions
 from rest_framework import status
 from djoser.social.views import ProviderAuthView
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView
-)
+from .serializers import UserSerializer
+
 
 User = get_user_model()
 
@@ -24,9 +21,9 @@ class SignUpView(APIView):
         last_name = data['last_name']
         email = data['email']
         password = data['password']
-        password2 = data['password2']
+        re_password = data['re_password']
 
-        if password == password2:
+        if password == re_password:
             if User.objects.filter(email=email).exists():
                 return Response({'error': 'Email already exists'})
             else:
@@ -68,5 +65,24 @@ class CustomProviderAuthView(ProviderAuthView):
                 httponly=settings.AUTH_COOKIE_HTTP_ONLY,
                 samesite=settings.AUTH_COOKIE_SAMESITE
             )
+
+        return response
+
+    
+class RetrieveUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        user = UserSerializer(user)
+
+        return Response(user.data, status=status.HTTP_200_OK)
+    
+    
+class LogoutView(APIView):
+    def post(self, request, *args, **kwargs):
+        response = Response(status=status.HTTP_204_NO_CONTENT)
+        response.delete_cookie('access')
+        response.delete_cookie('refresh')
 
         return response

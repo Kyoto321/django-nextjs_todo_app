@@ -1,6 +1,13 @@
-import "./globals.css";
+import { Footer, Navbar } from '@/components/common';
+import './globals.css';
+import { Inter } from 'next/font/google';
+import type { Metadata } from 'next';
+import Provider from '@/redux/provider'
 
-export const metadata = {
+
+const inter = Inter({ subsets: ['latin']});
+
+export const metadata: Metadata = {
   title: "TodoApp",
   description: "todo online app",
 };
@@ -12,7 +19,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body>{children}</body>
+      <body className={inter.className}>
+        <Provider>
+          <Navbar />
+          <div>{ children}</div>
+          <Footer />
+        </Provider>
+        </body>
     </html>
   );
 }

@@ -1,9 +1,9 @@
 import { ITask } from "./types/tasks";
 
-const baseUrl = 'http://localhost:8000/api';
+//const baseUrl = 'http://localhost:8000/api';
 
 export const getAllTodos = async (): Promise<ITask[]> => {
-  const res = await fetch('http://localhost:8000/api/users/dashboard', { cache: 'no-store' });
+  const res = await fetch('http://127.0.0.1:8000/api/users/dashboard', { cache: 'no-store' });
   const todos = await res.json();
   return todos;
 }

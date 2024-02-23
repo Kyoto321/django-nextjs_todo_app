@@ -30,6 +30,9 @@ DEBUG = getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
+SITE_ID = 1
+
+
 
 # Application definition
 
@@ -40,8 +43,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
+    #'dj_rest_auth',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
     'djoser',
     'social_django',
     'accounts',
@@ -54,9 +64,11 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'todo_site.urls'
@@ -72,6 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
             ],
         },
     },
@@ -143,10 +156,17 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.github.GithubOAuth2',
     'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account'
 ]
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/dashboard'
+LOGOUT_URL = 'logout'
+LOGOUT_REDIRECT_URL = 'login'
 
 
 AUTH_COOKIE = 'access'
@@ -173,11 +193,15 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
     'fields': 'email, first_name, last_name'
 }
 
+SOCIAL_AUTH_GITHUB_KEY = getenv('GITHUB_CLIENT_ID')
+SOCIAL_AUTH_GITHUB_SECRET = getenv('GITHUB_SECRET_KEY')
+
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        #'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'accounts.authenticate.CustomJWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        #'accounts.authenticate.CustomJWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -190,48 +214,6 @@ DJOSER = {
    
     'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ('http://localhost:3000/auth/google,http://localhost:3000/auth/facebook').split(',')
 }
-
-
-"""
-# firebase
-import pyrebase
-from decouple import config as env_config
-SECRET_KEY = env_config(“SECRET_KEY”)
-# Firebase settings
-try:
-  config = {
-“apiKey”: os.getenv(“FIREBASE_API_KEY”),
-“authDomain”: os.getenv(“FIREBASE_AUTH_DOMAIN”),
-“databaseURL”: os.getenv(“FIREBASE_DATABASE_URL”),
-“storageBucket”: os.getenv(“FIREBASE_STORAGE_BUCKET”),
-}
-firebase = pyrebase.initialize_app(config)
-auth = firebase.auth()
-except Exception:
-  raise Exception(“Firebase configuration credentials not found. Please add the configuration to the environment variables.”)
-# custom user model
-AUTH_USER_MODEL = ‘accounts.User’
-# Django REST Framework settings
-REST_FRAMEWORK = {
-‘DEFAULT_AUTHENTICATION_CLASSES’: [
-‘accounts.firebase_auth.firebase_authentication.FirebaseAuthentication’,
-],
-‘DEFAULT_PERMISSION_CLASSES’: [
-‘rest_framework.permissions.IsAuthenticated’,
-],
-}
-# authentication backend
-AUTHENTICATION_BACKENDS = [
-‘accounts.backends.model_backend.ModelBackend’,
-]
-# email settings
-EMAIL_BACKEND = ‘django.core.mail.backends.smtp.EmailBackend’
-EMAIL_HOST = env_config(“EMAIL_HOST”)
-EMAIL_PORT = env_config(“EMAIL_PORT”)
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env_config(“EMAIL_HOST_USER”)
-EMAIL_HOST_PASSWORD = env_config(“EMAIL_HOST_PASSWORD”)
-"""
 
 
 
@@ -249,6 +231,11 @@ CORS_ALLOWED_ORIGINS = getenv(
 CORS_ALLOWED_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'accounts.UserAccount'
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
+
+
+
 
 
 
