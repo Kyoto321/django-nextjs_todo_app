@@ -26,7 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = getenv('DJANGO_SECRET_KEY', get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = getenv('DEBUG', 'False') == 'True'
+#DEBUG = getenv('DEBUG', 'False') == 'True'
+DEBUG = True
 
 ALLOWED_HOSTS = getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
@@ -56,6 +57,7 @@ INSTALLED_APPS = [
     'social_django',
     'accounts',
     'tasks',
+    'social_auth',
 ]
 
 MIDDLEWARE = [
@@ -85,6 +87,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
+                'social_django.context_processers.login_redirect'
             ],
         },
     },
@@ -103,16 +106,6 @@ DATABASES = {
     }
 }
 
-"""
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'sambanks382@gmail.com'
-EMAIL_HOST_PASSWORD = 'mzfipiauzaldohlj'
-EMAIL_USE_TLS = True
-
-"""
 
 
 # Password validation
@@ -160,13 +153,12 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account'
 ]
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = '/dashboard'
-LOGOUT_URL = 'logout'
-LOGOUT_REDIRECT_URL = 'login'
+#LOGIN_URL = 'login'
+#LOGIN_REDIRECT_URL = '/dashboard'
+#LOGOUT_URL = 'logout'
+#LOGOUT_REDIRECT_URL = 'login'
 
 
 AUTH_COOKIE = 'access'
@@ -210,8 +202,8 @@ REST_FRAMEWORK = {
 
 
 DJOSER = {
+
     #'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': getenv('REDIRECT_URLS').split(',')
-   
     'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ('http://localhost:3000/auth/google,http://localhost:3000/auth/facebook').split(',')
 }
 
